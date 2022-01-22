@@ -1,0 +1,14 @@
+*************************
+DEVER BAU CUA
+*************************
+
+Front-end: Framework(react), 
+	Github: Tạo repo, invite, Tạo folder client.
+	Giao điện game: tối 23/1 - 8h.
+
+Sửa lỗi Front-end:
+	24/1~25/1
+
+Server: ~ 
+
+Xong tất cả: 28/1 ~ 29/1
