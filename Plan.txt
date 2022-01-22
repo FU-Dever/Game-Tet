@@ -8,6 +8,7 @@ Front-end: Framework(react),
 
 Sửa lỗi Front-end:
 	24/1~25/1
+	Thêm hiệu ứng âm thanh
 
 Server: ~ 
 
