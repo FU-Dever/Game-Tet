@@ -237,3 +237,9 @@ code {
   flex-direction: column;
   position: relative;
 }
+
+.hide-audio-bar{
+  position: absolute !important;
+  z-index: -1 !important;
+  opacity: 0 !important;
+}

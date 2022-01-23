@@ -4,78 +4,95 @@ import Button from "./components/button";
 import CountDown from "./components/count_down";
 import Options from "./components/options";
 import TopPlayer from "./components/top_player";
+import Audio from "./components/audio";
+import Cheer from "./components/cheer";
 
-export default class App extends React.Component{
 
-
-    constructor(props){
+export default class App extends React.Component {
+    constructor(props) {
         super(props);
         this.state = {
             optionIndex: [],
-            isCountDown:false,
+            isCountDown: false,
             popUpOpen: false,
-        }
+        };
     }
 
-    btnAction(btn){
-        if(btn==="start"){
-            let optionIndex1 = Math.floor(Math.random() * 5);  
-            let optionIndex2 = Math.floor(Math.random() * 5);  
-            let optionIndex3 = Math.floor(Math.random() * 5);  
+    
 
-            let optionIndex = [optionIndex1, optionIndex2, optionIndex3]
+    btnAction(btn) {
+        if (btn === "start") {
+            let optionIndex1 = Math.floor(Math.random() * 5);
+            let optionIndex2 = Math.floor(Math.random() * 5);
+            let optionIndex3 = Math.floor(Math.random() * 5);
+            let optionIndex = [optionIndex1, optionIndex2, optionIndex3];
+            // alert(optionIndex);
 
             this.setState({
                 optionIndex: optionIndex,
-                popUpOpen: true
-            })
-        }
-        else{
+                popUpOpen: true,
+            });
+        } else {
             this.setState({
-                isCountDown: true
-            })
+                isCountDown: true,
+            });
         }
     }
 
-    stopCountDown(){
+    stopCountDown() {
         this.setState({
-            isCountDown: false
-        })
+            isCountDown: false,
+        });
     }
 
-
-    popUpClose(){
+    popUpClose() {
         this.setState({
-            popUpOpen: false
-        })
+            popUpOpen: false,
+        });
     }
 
-
-    render(){
-        return(
-
+    render() {
+        return (
             <div className=".App">
-                <div id="title-app">FU-DEVER BẦU CUA</div>
-                <div id="wrap-content">
-                    <TopPlayer/>
-                    <Options/>
-                    {
-                        this.state.isCountDown &&
-                        <CountDown stopCountDown={()=>this.stopCountDown()}/>
-                    }
-                </div>
-                    
-                <div id="wrap-btns">
-                    <Button name="BẮT ĐẦU CHỌN" clicked={()=>this.btnAction("countDown")}/>
-                    <Button name="QUAY" clicked={()=>this.btnAction("start")}/>
-                </div>
+
+
+                {
+                    this.state.isCountDown &&
+                    <Audio/>
+                }
 
                 {
                     this.state.popUpOpen &&
-                    <BingoPopUp close={()=>this.popUpClose()} data={this.state.optionIndex}/>
+                    <Cheer/>
                 }
+
+                <div id="title-app">FU-DEVER BẦU CUA</div>
+                <div id="wrap-content">
+                    <TopPlayer />
+                    <Options />
+                    {this.state.isCountDown && (
+                        <CountDown stopCountDown={() => this.stopCountDown()} />
+                    )}
+                </div>
+
+                <div id="wrap-btns">
+                    <Button
+                        name="BẮT ĐẦU CHỌN"
+                        clicked={() => {
+                            this.btnAction("countDown")
+                            // this.RenderButtonAndSound()
+                        }}
+                    />
+                    <Button name="QUAY" clicked={() => this.btnAction("start")} />
+                </div>
+
+                {this.state.popUpOpen && (
+                    <BingoPopUp
+                        close={() => this.popUpClose()}
+                        data={this.state.optionIndex}
+                    />
+                )}
             </div>
         );
     }
 }
-
