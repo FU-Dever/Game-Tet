@@ -24,7 +24,6 @@ export default class App extends React.Component{
             let optionIndex3 = Math.floor(Math.random() * 5);  
 
             let optionIndex = [optionIndex1, optionIndex2, optionIndex3]
-            alert(optionIndex)
 
             this.setState({
                 optionIndex: optionIndex,
