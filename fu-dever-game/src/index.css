@@ -1,6 +1,5 @@
 @import url("./theme.css");
-
-body {
+@import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap');body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -23,7 +22,8 @@ code {
   padding-top: 60px;
   text-align: center;
   color: #fff;
-  font-size: 32px;
+  font-size: 50px;
+  font-family: 'Permanent Marker', cursive;
 }
 .option{
   width: 160px;
@@ -106,6 +106,7 @@ code {
 }
 #top-player-title{
   margin: 0px;
+  text-transform: uppercase;
   margin-bottom: 20px;
   color: #fff;
   text-align: center;
@@ -200,6 +201,7 @@ code {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition:0.5s;
   transform: scale(1.5);
 }
 .spinned-block{
