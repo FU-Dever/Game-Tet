@@ -1,5 +1,5 @@
 import React from "react";
-import { getDatabase, ref, set, push, child, update } from "firebase/database";
+import { ref, set, update } from "firebase/database";
 import { db } from "../src/firebase/setup";
 import BingoPopUp from "./components/bingo_pop_up";
 import Button from "./components/button";
@@ -25,13 +25,11 @@ export default class App extends React.Component {
       let optionIndex3 = Math.floor(Math.random() * 5);
 
       let optionIndex = [optionIndex1, optionIndex2, optionIndex3];
-      // alert(optionIndex)
 
       this.setState({
         optionIndex: optionIndex,
         popUpOpen: true,
       });
-      const newPostKey = push(child(ref(db), "posts")).key;
       const updates = {};
       updates["sessions/" + this.state.uid + "/results"] = optionIndex;
       update(ref(db), updates);
@@ -45,20 +43,9 @@ export default class App extends React.Component {
       this.setState({
         uid: uid,
       });
-      let today = new Date();
-      let date =
-        today.getFullYear() +
-        "-" +
-        (today.getMonth() + 1) +
-        "-" +
-        today.getDate();
-      let time =
-        today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-      let dateTime = date + " " + time;
       set(ref(db, "sessions/" + uid), {
         uid: uid,
         isOpenning: false,
-        timeCreate: dateTime,
       });
     } else {
       this.setState({
@@ -91,7 +78,7 @@ export default class App extends React.Component {
         <div id="title-app">FU-DEVER BẦU CUA</div>
         {this.state.uid}
         <div id="wrap-content">
-          <TopPlayer uid={this.state.uid}/>
+          <TopPlayer/>
           <Options />
           {this.state.isCountDown && (
             <CountDown stopCountDown={() => this.stopCountDown()} />

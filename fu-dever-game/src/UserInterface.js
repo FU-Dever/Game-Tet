@@ -3,111 +3,114 @@ import { ref, set, update, onValue } from "firebase/database";
 import { db } from "../src/firebase/setup";
 
 export default function UserInterface() {
-  const [username, setUsername] = useState("");
   const [user, setUser] = useState();
-  const [logedIn, setLogedIn] = useState(false);
   const [vans, setVans] = useState([]);
-  const [vanPlay, setVanPlay] = useState({});
-  const [money, setMoney] = useState(0);
-  
-  const registerUser = (e) => {
-    e.preventDefault();
-    set(ref(db, "users/" + username), {
-      username: username,
-      money: 50,
-    });
-    setUser({ username, money: 50 });
-    setLogedIn(true);
+  const [choicesOrigin,setChoiceOrigin]=useState([0,0,0,0,0,0]);
+  const registerUser = () => {
+    const username = document
+      .querySelector("#username")
+      .value.trim()
+      .toUpperCase();
+    if (username.match(/\bD(E|S|A)[0-9]{6}\b/g)) {
+      const user = ref(db, "users/" + username);
+      onValue(user, (snapshot) => {
+        if (snapshot.val() === null) {
+          set(ref(db, "users/" + username), {
+            username: username,
+            money: 50,
+          });
+          setUser({ username, money: 50 });
+        } else setUser(snapshot.val());
+      });
+    } else alert("MSSV Không Hợp Lệ!");
   };
   useEffect(() => {
     const vansRaw = ref(db, "sessions/");
     onValue(vansRaw, (snapshot) => {
-      const data = snapshot.val();
-      setVans(Object.entries(data));
+      setVans(Object.entries(snapshot.val()));
     });
   }, []);
-  const cocAction = () => {
+  const checkChoices=(e)=>{
+    console.log(e.target.key);
+    const newStatus=[...choicesOrigin]
+    newStatus[+e.target.key-1]=e.target.value;
+    setChoiceOrigin(newStatus)
+    console.log(newStatus);
+  }
+  const cocAction = (vanID) => {
+    const choices = [
+      { choice: 2, money: 2 },
+      { choice: 2, money: 2 },
+      { choice: 2, money: 2 },
+    ];
+    let totalCoc = choices.reduce((acc, cur) => acc + cur.money, 0);
+
     const updates = {};
-    let today = new Date();
-    let date =
-      today.getFullYear() +
-      "-" +
-      (today.getMonth() + 1) +
-      "-" +
-      today.getDate();
-    let time =
-      today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-    let dateTime = date + " " + time;
-    console.log(user);
-    updates["sessions/" + vanPlay.vanID + "/users/" + user.username] = {
+    updates["sessions/" + vanID + "/users/" + user.username] = {
       username: user.username,
-      money: money,
-      timeChoose: dateTime,
-      choices: [2, 3, 1],
+      choices: choices,
+    };
+    update(ref(db), updates);
+    updates["users/" + user.username] = {
+      ...user,
+      money: user.money - totalCoc,
     };
     update(ref(db), updates);
     setUser({
       ...user,
-      money: user.money - money,
+      money: user.money - totalCoc,
     });
-    updates["users/" + user.username] = {
-      ...user,
-      money: user.money - money,
-    };
-    update(ref(db), updates);
-    setVanPlay({...vanPlay,isCoced:true})
+    document.querySelector("#" + vanID).style.display = "none";
   };
   return (
     <div>
-      {logedIn ? (
+      {user !== undefined ? (
         <>
           <div>
             <h3>Username: {user.username}</h3>
             <h3>Money: {user.money}</h3>
           </div>
           {vans.map((van) => {
-            return (
-              <div
-                style={{
-                  background: van[1].isOpenning ? "green" : "red",
-                }}
-                onClick={() => {
-                  if (van[1].isOpenning) {
-                    setVanPlay({vanID:van[0],isCoced:false});
-                    const isOpenning = ref(
-                      db,
-                      "sessions/" + van[0] + "/isOpenning"
-                    );
-                    onValue(isOpenning, (snapshot) => {
-                      const data = snapshot.val();
-                    });
-                  } else {
-                    alert("Can not");
-                  }
-                }}
-              >
-                <h3>{van[0]}</h3>
-                {vanPlay.vanID !== "" && vanPlay.isCoced===false&&van[1].isOpenning&&(
-                  <div>
-                    <h3>Van ban chon: {vanPlay.vanID}</h3>
-                    <input
-                      type="number"
-                      min="0"
-                      onChange={(e) => {
-                        (e.target.value<=user.money)?
-                        setMoney(e.target.value):alert("Không đủ tiền")
-                      }}
-                    />
-                    <button onClick={cocAction}>Cọc</button>
-                  </div>
-                )}
-              </div>
-            );
+            if (van[1].isOpenning) {
+              return (
+                <div id={van[0]}>
+                  <h3>Mã ván: {van[0]}</h3>
+                  
+                  <button onClick={() => cocAction(van[0])}>Cọc</button>
+                </div>
+              );
+            }
           })}
+          <div id="wrap-options">
+                    <div className="option">
+                        <img src="./assets/images/deer.png" alt="option"/>
+                        <input type="number" min="0" key="1" max={user.money} onChange={checkChoices}/>
+                    </div>
+                    <div className="option">
+                        <img src="./assets/images/crab.jpg" alt="option"/>
+                        <input type="number" min="0" key="2" max={user.money} onChange={checkChoices}/>
+                    </div>
+                    <div className="option">
+                        <img src="./assets/images/fish.png" alt="option"/>
+                        <input type="number" min="0" key="3" max={user.money} onChange={checkChoices}/>
+                    </div>
+                    <div className="option">
+                        <img src="./assets/images/shrimp.png" alt="option"/>
+                        <input type="number" min="0" key="4" max={user.money} onChange={checkChoices}/>
+                    </div>
+                    <div className="option">
+                        <img src="./assets/images/cook.png" alt="option"/>
+                        <input type="number" min="0" key="5" max={user.money} onChange={checkChoices}/>
+                    </div>
+                    <div className="option">
+                        <img src="./assets/images/calabash.png" alt="option"/>
+                        <input type="number" min="0" key="6" max={user.money} onChange={checkChoices}/>
+                    </div>
+                </div>
         </>
       ) : (
         <>
-          <input type="text" onChange={(e) => setUsername(e.target.value)} />
+          <input type="text" id="username" placeholder="MSSV" />
           <button onClick={registerUser}>Play now</button>
         </>
       )}
