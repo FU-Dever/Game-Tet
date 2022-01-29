@@ -47,7 +47,13 @@ export default function UserInterface() {
   const checkChoices=(e,index)=>{
     const newStatus=[...choicesOrigin]
     newStatus[index]=+e.target.value;
-    setChoiceOrigin(newStatus)
+    let numberChoices=0
+    const totalCoc=newStatus.reduce((acc,cur)=>{
+      cur>0&&numberChoices++
+      return acc+cur
+    },0);
+    numberChoices>3?alert("Chỉ được cọc tối đa 3 con"):
+    totalCoc>user.money?alert("Không đủ tiền"):setChoiceOrigin(newStatus)
   }
   const cocAction = (vanID) => {
     const choices = [];
@@ -58,7 +64,7 @@ export default function UserInterface() {
       })
     })
     let totalCoc = choices.reduce((acc, cur) => acc + cur.money, 0);
-    if (totalCoc===0) totalCoc=10
+    alert("Đã cọc "+totalCoc)
     const updates = {};
     updates["sessions/" + vanID + "/users/" + user.username] = {
       username: user.username,

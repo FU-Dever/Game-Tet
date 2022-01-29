@@ -16,6 +16,7 @@ export default class App extends React.Component {
       popUpOpen: false,
       uid: "",
       numberUsers:0,
+      isAuth:false
     };
   }
 
@@ -26,7 +27,6 @@ export default class App extends React.Component {
       let optionIndex3 = Math.floor(Math.random() * 5);
 
       let optionIndex = [optionIndex1, optionIndex2, optionIndex3];
-      alert(optionIndex)
       this.setState({
         optionIndex: optionIndex,
         popUpOpen: true,
@@ -96,9 +96,17 @@ export default class App extends React.Component {
       popUpOpen: false,
     });
   }
+  confirmAuth(){
+    const admin = ref(db, 'admins/fu-dever');
+    onValue(admin, (snapshot) => {
+      const password = snapshot.val();
+      (password===+document.getElementById('host_password').value)?
+      this.setState({isAuth:true}):alert("Key log doesn't match")
+});
+  }
 
   render() {
-    return (
+    return (this.state.isAuth?
       <div className=".App">
         <div id="title-app">FU-DEVER BẦU CUA</div>
         <div id="title-app">Mã Ván: {this.state.uid}</div>
@@ -128,6 +136,9 @@ export default class App extends React.Component {
           />
         )}
       </div>
-    );
+    :<>
+    <input type="password" name="password"id="host_password" placeholder="Key log of host"/>
+    <button onClick={()=>this.confirmAuth()}>Log In</button>
+    </>    );
   }
 }
