@@ -2,11 +2,11 @@ import React from "react";
 
 const optionData = [
     "./assets/images/deer.png",
+    "./assets/images/cook.png",
     "./assets/images/crab.png",
+    "./assets/images/calabash.png",
     "./assets/images/fish.png",
     "./assets/images/shrimp.png",
-    "./assets/images/cook.png",
-    "./assets/images/calabash.png",
 ]
 
 export default class BingoPopUp extends React.Component{

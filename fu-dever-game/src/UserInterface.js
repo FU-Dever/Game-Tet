@@ -6,20 +6,6 @@ export default function UserInterface() {
   const [user, setUser] = useState();
   const [vans, setVans] = useState([]);
   const [choicesOrigin,setChoiceOrigin]=useState([0,0,0,0,0,0]);
-
-  useEffect(() => {
-    const vansRaw = ref(db, "sessions/");
-    onValue(vansRaw, (snapshot) => {
-      setVans(Object.entries(snapshot.val()));
-    });
-    
-    const userRef = ref(db, 'users/' +user?.username);
-    onValue(userRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data!==null) setUser(data)
-  });
-  },[]);
-
   const registerUser = () => {
     const username = document
       .querySelector("#username")
@@ -35,94 +21,96 @@ export default function UserInterface() {
             password,
             money: 50,
           });
+          setUser({ username, money: 50 });
         } else{
-          if (snapshot.val().password !==password) 
-          alert("Passwords do not match")
-          else setUser(snapshot.val())
+          (snapshot.val().password ===password)?setUser(snapshot.val()):alert("Passwords do not match")
         }
       });
     } else alert("MSSV Không Hợp Lệ!");
   };
-
-  const checkChoices=(e,index)=>{
+  useEffect(() => {
+    const vansRaw = ref(db, "sessions/");
+    onValue(vansRaw, (snapshot) => {
+      setVans(Object.entries(snapshot.val()));
+    });
+  }, []);
+  const checkChoices=(e)=>{
+    console.log(e.target.key);
     const newStatus=[...choicesOrigin]
-    newStatus[index]=+e.target.value;
-    let numberChoices=0
-    const totalCoc=newStatus.reduce((acc,cur)=>{
-      cur>0&&numberChoices++
-      return acc+cur
-    },0);
-    numberChoices>3?alert("Chỉ được cọc tối đa 3 con"):
-    totalCoc>user.money?alert("Không đủ tiền"):setChoiceOrigin(newStatus)
+    newStatus[+e.target.key-1]=e.target.value;
+    setChoiceOrigin(newStatus)
+    console.log(newStatus);
   }
   const cocAction = (vanID) => {
-    const choices = [];
-    choicesOrigin.map((choice,i)=>{
-      choice!==0&&choices.push({
-        choice:i,
-        money:choice
-      })
-    })
+    const choices = [
+      { choice: 2, money: 2 },
+      { choice: 2, money: 2 },
+      { choice: 2, money: 2 },
+    ];
     let totalCoc = choices.reduce((acc, cur) => acc + cur.money, 0);
-    alert("Đã cọc "+totalCoc)
+    if (totalCoc===0) totalCoc=10
     const updates = {};
     updates["sessions/" + vanID + "/users/" + user.username] = {
       username: user.username,
       choices: choices,
     };
-  
+    update(ref(db), updates);
     updates["users/" + user.username] = {
       ...user,
-      money: user.money -totalCoc,
+      money: user.money - totalCoc,
     };
     update(ref(db), updates);
+    setUser({
+      ...user,
+      money: user.money - totalCoc,
+    });
     document.querySelector("#" + vanID).style.display = "none";
-    
   };
   return (
     <div>
       {user !== undefined ? (
         <>
           <div>
-            <h3>Username: {user?.username}</h3>
-            <h3>Money: {user?.money}</h3>
+            <h3>Username: {user.username}</h3>
+            <h3>Money: {user.money}</h3>
           </div>
           {vans.map((van) => {
             if (van[1].isOpenning) {
               return (
                 <div id={van[0]}>
                   <h3>Mã ván: {van[0]}</h3>
-                  <div id="wrap-options">
-                    <div className="option">
-                        <img src="./assets/images/deer.png" alt="option"/>
-                        <input type="number" min="0" max={user.money} onChange={(e)=>checkChoices(e,0)}/>
-                    </div>
-                    <div className="option">
-                        <img src="./assets/images/crab.jpg" alt="option"/>
-                        <input type="number" min="0" max={user.money} onChange={(e)=>checkChoices(e,1)}/>
-                    </div>
-                    <div className="option">
-                        <img src="./assets/images/fish.png" alt="option"/>
-                        <input type="number" min="0" max={user.money} onChange={(e)=>checkChoices(e,2)}/>
-                    </div>
-                    <div className="option">
-                        <img src="./assets/images/shrimp.png" alt="option"/>
-                        <input type="number" min="0" max={user.money} onChange={(e)=>checkChoices(e,3)}/>
-                    </div>
-                    <div className="option">
-                        <img src="./assets/images/cook.png" alt="option"/>
-                        <input type="number" min="0" max={user.money} onChange={(e)=>checkChoices(e,4)}/>
-                    </div>
-                    <div className="option">
-                        <img src="./assets/images/calabash.png" alt="option"/>
-                        <input type="number" min="0" max={user.money} onChange={(e)=>checkChoices(e,5)}/>
-                    </div>
-                </div>       
+                  
                   <button onClick={() => cocAction(van[0])}>Cọc</button>
                 </div>
               );
             }
           })}
+          <div id="wrap-options">
+                    <div className="option">
+                        <img src="./assets/images/deer.png" alt="option"/>
+                        <input type="number" min="0" key="1" max={user.money} onChange={checkChoices}/>
+                    </div>
+                    <div className="option">
+                        <img src="./assets/images/crab.jpg" alt="option"/>
+                        <input type="number" min="0" key="2" max={user.money} onChange={checkChoices}/>
+                    </div>
+                    <div className="option">
+                        <img src="./assets/images/fish.png" alt="option"/>
+                        <input type="number" min="0" key="3" max={user.money} onChange={checkChoices}/>
+                    </div>
+                    <div className="option">
+                        <img src="./assets/images/shrimp.png" alt="option"/>
+                        <input type="number" min="0" key="4" max={user.money} onChange={checkChoices}/>
+                    </div>
+                    <div className="option">
+                        <img src="./assets/images/cook.png" alt="option"/>
+                        <input type="number" min="0" key="5" max={user.money} onChange={checkChoices}/>
+                    </div>
+                    <div className="option">
+                        <img src="./assets/images/calabash.png" alt="option"/>
+                        <input type="number" min="0" key="6" max={user.money} onChange={checkChoices}/>
+                    </div>
+                </div>
         </>
       ) : (
         <>

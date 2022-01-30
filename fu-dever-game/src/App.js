@@ -1,5 +1,5 @@
 import React from "react";
-import { ref, set, update,onValue } from "firebase/database";
+import { ref, set, update } from "firebase/database";
 import { db } from "../src/firebase/setup";
 import BingoPopUp from "./components/bingo_pop_up";
 import Button from "./components/button";
@@ -15,8 +15,6 @@ export default class App extends React.Component {
       isCountDown: false,
       popUpOpen: false,
       uid: "",
-      numberUsers:0,
-      isAuth:false
     };
   }
 
@@ -27,31 +25,13 @@ export default class App extends React.Component {
       let optionIndex3 = Math.floor(Math.random() * 5);
 
       let optionIndex = [optionIndex1, optionIndex2, optionIndex3];
+
       this.setState({
         optionIndex: optionIndex,
         popUpOpen: true,
       });
       const updates = {};
       updates["sessions/" + this.state.uid + "/results"] = optionIndex;
-      const usersRef = ref(db, 'sessions/' + this.state.uid + '/users');
-      onValue(usersRef, (snapshot) => {
-        const data =Object.values(snapshot.val());
-          data.map(user=>{
-            let totalAward=0;
-            user.choices.map(({choice,money})=>{
-              optionIndex.map(option=>{
-                totalAward+=option===choice?money:0;
-              })
-            })
-            let userMoney;
-            const userMoneyRef = ref(db, 'users/' +user.username+'/money');
-            onValue(userMoneyRef, (snapshot) => {
-              userMoney=snapshot.val();
-          })
-            updates['users/'+user.username+'/money']=userMoney+totalAward
-        }
-        )
-      });
       update(ref(db), updates);
     } else if (btn === "createCode") {
       let uid = "";
@@ -62,7 +42,6 @@ export default class App extends React.Component {
             : String.fromCharCode(Math.floor(Math.random() * 26 + 1) + 96);
       this.setState({
         uid: uid,
-        numberUsers:0
       });
       set(ref(db, "sessions/" + uid), {
         uid: uid,
@@ -75,10 +54,6 @@ export default class App extends React.Component {
       const updates = {};
       updates["sessions/" + this.state.uid + "/isOpenning"] = true;
       update(ref(db), updates);
-      const cocedUser = ref(db, 'sessions/' + this.state.uid+'/users');
-      onValue(cocedUser, (snapshot) => {
-        this.setState({numberUsers:Object.entries(snapshot.val()??[]).length});
-      });
     }
   }
 
@@ -96,21 +71,12 @@ export default class App extends React.Component {
       popUpOpen: false,
     });
   }
-  confirmAuth(){
-    const admin = ref(db, 'admins/fu-dever');
-    onValue(admin, (snapshot) => {
-      const password = snapshot.val();
-      (password===+document.getElementById('host_password').value)?
-      this.setState({isAuth:true}):alert("Key log doesn't match")
-});
-  }
 
   render() {
-    return (this.state.isAuth?
+    return (
       <div className=".App">
         <div id="title-app">FU-DEVER BẦU CUA</div>
-        <div id="title-app">Mã Ván: {this.state.uid}</div>
-        <div id="title-app">Đã có: {this.state.numberUsers} người cọc</div>
+        <div id="title-app">FU-DEVER BẦU CUA</div>
         {this.state.uid}
         <div id="wrap-content">
           <TopPlayer/>
@@ -136,9 +102,6 @@ export default class App extends React.Component {
           />
         )}
       </div>
-    :<>
-    <input type="password" name="password"id="host_password" placeholder="Key log of host"/>
-    <button onClick={()=>this.confirmAuth()}>Log In</button>
-    </>    );
+    );
   }
 }
