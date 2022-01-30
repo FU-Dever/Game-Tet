@@ -23,7 +23,7 @@ export default function UserInterface() {
           });
           setUser({ username, money: 50 });
         } else {
-          (snapshot.val().password === password) ? setUser(snapshot.val()) : alert("Có thể do áp lực khiến bạn không nhớ mật khẩu, Hãy thư giãn và thử lại lần sau, xin cảm ơn")
+          (snapshot.val().password === password) ? setUser(snapshot.val()) : alert("Invalid key")
         }
       });
     } else alert("MSSV Không Hợp Lệ!");
@@ -113,14 +113,18 @@ export default function UserInterface() {
           </div>
         </>
       ) : (
-
-        <div id="login-form">
-
-          <h3>Login</h3>
-          <input type="text" id="username" placeholder="MSSV" />
-          <input type="text" id="password" placeholder="Key Log" />
-          <button class="button" onClick={registerUser}>Play now</button>
-
+        <div>
+          <div className="img-wrap">
+            <img src="../assets/images/bct.png" alt="" />
+          </div>
+          <div className="wrap-login">
+            <h1>Login</h1>
+            <label for="uname"><b>Mã Sinh Viên</b></label>
+            <input type="text" id="username" placeholder="MSSV" />
+            <label for="uname"><b>Key login</b></label>
+            <input type="text" id="password" placeholder="Key Log" />
+            <button class="button" onClick={registerUser}>Play now</button>
+          </div>
         </div>
       )}
     </div>
