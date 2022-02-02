@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ref, set, update, onValue } from "firebase/database";
 import { db } from "../src/firebase/setup";
-
 export default function UserInterface() {
   const [user, setUser] = useState();
   const [vans, setVans] = useState([]);
@@ -36,7 +35,7 @@ export default function UserInterface() {
     newStatus[+e.target.key-1]=e.target.value;
     setChoiceOrigin(newStatus)
     console.log(newStatus);
-  }
+  };
   const cocAction = (vanID) => {
     const choices = [
       { choice: 2, money: 2 },
@@ -44,7 +43,6 @@ export default function UserInterface() {
       { choice: 2, money: 2 },
     ];
     let totalCoc = choices.reduce((acc, cur) => acc + cur.money, 0);
-
     const updates = {};
     updates["sessions/" + vanID + "/users/" + user.username] = {
       username: user.username,
