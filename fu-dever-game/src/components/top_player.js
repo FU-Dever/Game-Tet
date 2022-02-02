@@ -12,9 +12,10 @@ export default function TopPlayer() {
       setPlayers(Object.entries(data));
     });
   }, []);
+  console.log(players)
   players !== [] &&
     players.sort(function (player1, player2) {
-      return player1[1].money < player2[1].money;
+      return player1[1].money <= player2[1].money;
     });
   return (
     <div id="wrap-top-player">
