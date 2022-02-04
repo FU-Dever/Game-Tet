@@ -122,7 +122,7 @@ export default function UserInterface() {
         <>
          <div>
           <div className="img-wrap">
-            <img src="../assets/images/bct.png" alt="" />
+            <img src={require("../src/assets/images/bct.png")} alt="" />
           </div>
           <div className="wrap-login">
             <h1>Login</h1>
