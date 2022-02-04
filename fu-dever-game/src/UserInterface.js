@@ -11,12 +11,15 @@ export default function UserInterface() {
     const vansRaw = ref(db, "sessions/");
     onValue(vansRaw, (snapshot) => {
       setVans(Object.entries(snapshot.val()));
+      setChoiceOrigin([0,0,0,0,0,0])
     });
     
     const userRef = ref(db, 'users/' +user?.username);
     onValue(userRef, (snapshot) => {
       const data = snapshot.val();
-      if (data!==null) setUser(data)
+      if (data!==null) { 
+        setUser(data);
+      }
   });
   },[]);
 
@@ -37,8 +40,10 @@ export default function UserInterface() {
           });
         } else{
           if (snapshot.val().password !==password) 
-          alert("Passwords do not match")
-          else setUser(snapshot.val())
+          alert("Mật khẩu không hợp lệ")
+          else{
+            setUser(snapshot.val())
+          }
         }
       });
     } else alert("MSSV Không Hợp Lệ!");
@@ -47,6 +52,20 @@ export default function UserInterface() {
   const checkChoices=(e,index)=>{
     const newStatus=[...choicesOrigin]
     newStatus[index]=+e.target.value;
+    let numCoc=0;
+    newStatus.map(ob=>{numCoc+=ob===0?0:1})
+    console.log(newStatus)
+    if (numCoc>3) {
+      newStatus[index]= e.target.value=0;
+      alert("Bạn chỉ được cọc tối đa 3 con")
+    }
+    else{
+      let total=newStatus.reduce((acc,cur)=>acc+cur,0);
+      if (total>user.money){
+        alert("Bạn không đủ tiền");
+        newStatus[index]= e.target.value=Math.floor(newStatus[index]/10);
+      }
+    }
     setChoiceOrigin(newStatus)
   }
   const cocAction = (vanID) => {
@@ -58,24 +77,26 @@ export default function UserInterface() {
       })
     })
     let totalCoc = choices.reduce((acc, cur) => acc + cur.money, 0);
-    if (totalCoc===0) totalCoc=10
-    const updates = {};
-    updates["sessions/" + vanID + "/users/" + user.username] = {
-      username: user.username,
-      choices: choices,
-    };
-  
-    updates["users/" + user.username] = {
-      ...user,
-      money: user.money -totalCoc,
-    };
-    update(ref(db), updates);
-    document.querySelector("#" + vanID).style.display = "none";
+    if (totalCoc !== 0) {
+      const updates = {};
+      updates["sessions/" + vanID + "/users/" + user.username] = {
+        username: user.username,
+        choices: choices,
+      };
+    
+      updates["users/" + user.username] = {
+        ...user,
+        money: user.money -totalCoc,
+      };
+      update(ref(db), updates);
+      setChoiceOrigin([0,0,0,0,0,0])
+      document.querySelector("#" + vanID).style.display = "none";
+    }
     
   };
   return (
     <div>
-      {user !== undefined ? (
+      {user !== undefined? (
         <>
           <div>
             <h3>Username: {user?.username}</h3>
