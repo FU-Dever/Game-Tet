@@ -120,9 +120,19 @@ export default function UserInterface() {
         </>
       ) : (
         <>
-          <input type="text" id="username" placeholder="MSSV" />
-          <input type="password" id="password" placeholder="Key Log" />
-          <button onClick={registerUser}>Play now</button>
+         <div>
+          <div className="img-wrap">
+            <img src="../assets/images/bct.png" alt="" />
+          </div>
+          <div className="wrap-login">
+            <h1>Login</h1>
+            <label for="uname"><b>Mã Sinh Viên</b></label>
+            <input type="text" id="username" placeholder="MSSV" />
+            <label for="uname"><b>Key login</b></label>
+            <input type="text" id="password" placeholder="Key Log" />
+            <button class="button" onClick={registerUser}>Play now</button>
+          </div>
+        </div>
         </>
       )}
     </div>
