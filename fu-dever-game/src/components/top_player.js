@@ -12,14 +12,14 @@ export default function TopPlayer() {
       setPlayers(Object.entries(data));
     });
   }, []);
+  console.log(players)
   players !== [] &&
     players.sort(function (player1, player2) {
-      return player1[1].money < player2[1].money;
+      return player1[1].money <= player2[1].money;
     });
   return (
     <div id="wrap-top-player">
       <h2 id="top-player-title">Top Rank</h2>
-      <h3 id="top-player-title">Total users: {players.length}</h3>
       {players !== [] &&
         players.map((player) => (
           <Player name={player[0]} score={player[1].money} />
