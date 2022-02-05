@@ -130,7 +130,7 @@ export default function UserInterface() {
             <input type="text" id="username" placeholder="MSSV" />
             <label for="uname"><b>Key login</b></label>
             <input type="text" id="password" placeholder="Key Log" />
-            <button class="button" onClick={registerUser}>Play now</button>
+            <button className="button" onClick={registerUser}>Play now</button>
           </div>
         </div>
         </>
